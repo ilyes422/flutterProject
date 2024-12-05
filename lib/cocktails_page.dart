@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'coktail_detail_page.dart';
+
 
 class CocktailsPage extends StatefulWidget {
   @override
@@ -43,24 +45,43 @@ class _CocktailsPageState extends State<CocktailsPage> {
     }
   }
 
+  Future<dynamic> fetchCocktailDetails(String id) async {
+    final response = await http.get(
+      Uri.parse('https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=$id'),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['drinks'] != null ? data['drinks'][0] : null;
+    } else {
+      throw Exception('ERROR.');
+    }
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchQuery = value;
+      if (_searchQuery.isEmpty) {
+        _cocktails = fetchCocktailsByLetter('a');
+      } else {
+        _cocktails = searchCocktailsByName(_searchQuery);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Cocktails Explorer'),
-        backgroundColor: Colors.orange,
+        title: Text('Available Cocktails'),
+        backgroundColor: Colors.purple,
       ),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                  _cocktails = searchCocktailsByName(value);
-                });
-              },
+              onChanged: _onSearchChanged,
               decoration: InputDecoration(
                 labelText: 'Search Cocktails',
                 border: OutlineInputBorder(),
@@ -79,23 +100,39 @@ class _CocktailsPageState extends State<CocktailsPage> {
                 } else if (snapshot.data!.isEmpty) {
                   return Center(child: Text('No cocktails found'));
                 } else {
+                  final drinks = snapshot.data!;
                   return ListView.builder(
-                    itemCount: snapshot.data!.length,
+                    itemCount: drinks.length,
                     itemBuilder: (context, index) {
-                      final cocktail = snapshot.data![index];
-                      return ListTile(
-                        leading: Image.network(
-                          cocktail['strDrinkThumb'] ??
-                              'https://via.placeholder.com/50',
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
+                      final cocktail = drinks[index];
+                      return Card(
+                        child: ListTile(
+                          leading: cocktail['strDrinkThumb'] != null
+                              ? Image.network(
+                                  cocktail['strDrinkThumb'],
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                )
+                              : Icon(Icons.fastfood),
+                          title: Text(cocktail['strDrink'] ?? 'Unknown cocktail'),
+                          subtitle:
+                              Text(
+                              cocktail['strCategory'] ?? 'Unknown category'),
+                          onTap: () async {
+                            final cocktailDetails =
+                                await fetchCocktailDetails(cocktail['idDrink']);
+                            if (cocktailDetails != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      CocktailDetailPage(cocktailDetails),
+                                ),
+                              );
+                            }
+                          },
                         ),
-                        title:
-                            Text(cocktail['strDrink'] ?? 'No name available'),
-                        subtitle: Text(
-                            'Category: ${cocktail['strCategory'] ?? 'N/A'}'),
-                        onTap: () {},
                       );
                     },
                   );
