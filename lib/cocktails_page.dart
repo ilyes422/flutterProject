@@ -33,7 +33,7 @@ class _CocktailsPageState extends State<CocktailsPage> {
   Future<List<dynamic>> searchCocktailsByName(String query) async {
     final response = await http.get(
       Uri.parse(
-          'https://www.thecocktaildb.com/api/json/v1/1/search.php?i=$query'),
+          'https://www.thecocktaildb.com/api/json/v1/1/search.php?s=$query'),
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -67,23 +67,6 @@ class _CocktailsPageState extends State<CocktailsPage> {
                 prefixIcon: Icon(Icons.search),
               ),
             ),
-          ),
-          DropdownButton<String>(
-            hint: Text('Select First Letter'),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _cocktails = fetchCocktailsByLetter(value);
-                });
-              }
-            },
-            items: 'abcdefghijklmnopqrstuvwxyz'
-                .split('')
-                .map((letter) => DropdownMenuItem<String>(
-                      value: letter,
-                      child: Text(letter.toUpperCase()),
-                    ))
-                .toList(),
           ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
