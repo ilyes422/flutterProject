@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'meals_details_page.dart';
 
 class FoodPage extends StatefulWidget {
   @override
@@ -9,15 +10,14 @@ class FoodPage extends StatefulWidget {
 
 class _FoodPageState extends State<FoodPage> {
   late Future<List<dynamic>> _futureMeals;
-  String _searchQuery = ''; // Stocke la requête de recherche
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    _futureMeals = fetchMealsByFirstLetter('a'); // Chargement initial avec 'a'
+    _futureMeals = fetchMealsByFirstLetter('a'); 
   }
 
-  // Fonction pour récupérer les plats par la première lettre
   Future<List<dynamic>> fetchMealsByFirstLetter(String letter) async {
     final response = await http.get(
       Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?f=$letter'),
@@ -25,13 +25,12 @@ class _FoodPageState extends State<FoodPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['meals'] ?? []; // Retourne une liste vide si aucune donnée
+      return data['meals'] ?? []; 
     } else {
-      throw Exception('Erreur lors du chargement des plats.');
+      throw Exception('ERROR.');
     }
   }
 
-  // Fonction pour rechercher des plats par nom
   Future<List<dynamic>> fetchMealsByName(String name) async {
     final response = await http.get(
       Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?s=$name'),
@@ -39,13 +38,12 @@ class _FoodPageState extends State<FoodPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['meals'] ?? []; // Retourne une liste vide si aucune donnée
+      return data['meals'] ?? []; 
     } else {
-      throw Exception('Erreur lors de la recherche des plats.');
+      throw Exception('ERROR.');
     }
   }
 
-  // Fonction pour récupérer les détails d'un plat par son ID
   Future<dynamic> fetchMealDetails(String id) async {
     final response = await http.get(
       Uri.parse('https://www.themealdb.com/api/json/v1/1/lookup.php?i=$id'),
@@ -55,19 +53,16 @@ class _FoodPageState extends State<FoodPage> {
       final data = jsonDecode(response.body);
       return data['meals'] != null ? data['meals'][0] : null;
     } else {
-      throw Exception('Erreur lors de la récupération des détails du plat.');
+      throw Exception('ERROR.');
     }
   }
 
-  // Gestion de la recherche
   void _onSearchChanged(String value) {
     setState(() {
       _searchQuery = value;
       if (_searchQuery.isEmpty) {
-        // Recharge la liste initiale si aucun texte saisi
         _futureMeals = fetchMealsByFirstLetter('a');
       } else {
-        // Recherche les plats par nom
         _futureMeals = fetchMealsByName(_searchQuery);
       }
     });
@@ -77,17 +72,17 @@ class _FoodPageState extends State<FoodPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plats disponibles'),
+        title: Text('Meals available'),
+        backgroundColor: Colors.orange,
       ),
       body: Column(
         children: [
-          // Barre de recherche
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               onChanged: _onSearchChanged,
               decoration: InputDecoration(
-                hintText: 'Recherchez un plat...',
+                hintText: 'Check the meals',
                 border: OutlineInputBorder(),
                 prefixIcon: Icon(Icons.search),
               ),
@@ -101,9 +96,9 @@ class _FoodPageState extends State<FoodPage> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Erreur : ${snapshot.error}'));
+                  return Center(child: Text('ERROR : ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('Aucun plat trouvé.'));
+                  return Center(child: Text('No meal found.'));
                 } else {
                   final meals = snapshot.data!;
                   return ListView.builder(
@@ -120,8 +115,8 @@ class _FoodPageState extends State<FoodPage> {
                                   fit: BoxFit.cover,
                                 )
                               : Icon(Icons.fastfood),
-                          title: Text(meal['strMeal'] ?? 'Plat inconnu'),
-                          subtitle: Text(meal['strCategory'] ?? 'Catégorie inconnue'),
+                          title: Text(meal['strMeal'] ?? 'Unknown meal'),
+                          subtitle: Text(meal['strCategory'] ?? 'Unknown categorie'),
                           onTap: () async {
                             final mealDetails = await fetchMealDetails(meal['idMeal']);
                             if (mealDetails != null) {
@@ -147,39 +142,4 @@ class _FoodPageState extends State<FoodPage> {
   }
 }
 
-class MealDetailPage extends StatelessWidget {
-  final dynamic mealDetails;
 
-  MealDetailPage(this.mealDetails);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(mealDetails['strMeal']),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              mealDetails['strMealThumb'] != null
-                  ? Image.network(mealDetails['strMealThumb'])
-                  : Icon(Icons.fastfood, size: 100),
-              SizedBox(height: 16),
-              Text(
-                'Catégorie: ${mealDetails['strCategory'] ?? 'Inconnue'}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Description: ${mealDetails['strInstructions'] ?? 'Aucune description disponible.'}',
-                style: TextStyle(fontSize: 16),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
