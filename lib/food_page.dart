@@ -116,7 +116,7 @@ class _FoodPageState extends State<FoodPage> {
                                 )
                               : Icon(Icons.fastfood),
                           title: Text(meal['strMeal'] ?? 'Unknown meal'),
-                          subtitle: Text(meal['strCategory'] ?? 'Unknown categorie'),
+                          subtitle: Text(meal['strCategory'] ?? 'Unknown category'),
                           onTap: () async {
                             final mealDetails = await fetchMealDetails(meal['idMeal']);
                             if (mealDetails != null) {
