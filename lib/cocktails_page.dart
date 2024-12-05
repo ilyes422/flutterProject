@@ -19,11 +19,12 @@ class _CocktailsPageState extends State<CocktailsPage> {
 
   Future<List<dynamic>> fetchCocktailsByLetter(String letter) async {
     final response = await http.get(
-      Uri.parse('www.thecocktaildb.com/api/json/v1/1/search.php?f=$letter'),
+      Uri.parse(
+          'https://www.thecocktaildb.com/api/json/v1/1/search.php?f=$letter'),
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['cocktails'] ?? [];
+      return data['drinks'] ?? [];
     } else {
       throw Exception('Failed to load cocktails');
     }
@@ -31,11 +32,12 @@ class _CocktailsPageState extends State<CocktailsPage> {
 
   Future<List<dynamic>> searchCocktailsByName(String query) async {
     final response = await http.get(
-      Uri.parse('www.thecocktaildb.com/api/json/v1/1/search.php?i=$query'),
+      Uri.parse(
+          'https://www.thecocktaildb.com/api/json/v1/1/search.php?i=$query'),
     );
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['cocktails'] ?? [];
+      return data['drinks'] ?? [];
     } else {
       throw Exception('Failed to search cocktails');
     }
@@ -100,14 +102,16 @@ class _CocktailsPageState extends State<CocktailsPage> {
                       final cocktail = snapshot.data![index];
                       return ListTile(
                         leading: Image.network(
-                          cocktail['strCocktailThumb'],
+                          cocktail['strDrinkThumb'] ??
+                              'https://via.placeholder.com/50',
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
                         ),
-                        title: Text(cocktail['strCocktail']),
-                        subtitle:
-                            Text('Category: ${cocktail['strCategory'] ?? 'N/A'}'),
+                        title:
+                            Text(cocktail['strDrink'] ?? 'No name available'),
+                        subtitle: Text(
+                            'Category: ${cocktail['strCategory'] ?? 'N/A'}'),
                         onTap: () {},
                       );
                     },
