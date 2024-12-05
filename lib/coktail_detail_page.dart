@@ -10,6 +10,7 @@ class CocktailDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(cocktailDetails['strDrink']),
+        backgroundColor: Colors.purple,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
