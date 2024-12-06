@@ -1,9 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/form_add_resource.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'meals_details_page.dart';
+import 'form_add_resource.dart';
+
 
 class FoodPage extends StatefulWidget {
+  final bool data;
+  final String selectedValue;
+  final String name;
+  final String category;
+  final String description;
+
+  const FoodPage({
+    super.key,
+    this.data = true,
+    required this.selectedValue,
+    required this.name,
+    required this.category,
+    required this.description,
+  });
+
+  const FoodPage.empty({
+    super.key,
+    this.data = false,
+    this.selectedValue = "",
+    this.name = "",
+    this.category = "",
+    this.description = "",
+  });
+
   @override
   _FoodPageState createState() => _FoodPageState();
 }
@@ -15,7 +42,7 @@ class _FoodPageState extends State<FoodPage> {
   @override
   void initState() {
     super.initState();
-    _futureMeals = fetchMealsByFirstLetter('a'); 
+    _futureMeals = fetchMealsByFirstLetter('a');
   }
 
   Future<List<dynamic>> fetchMealsByFirstLetter(String letter) async {
@@ -25,7 +52,7 @@ class _FoodPageState extends State<FoodPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['meals'] ?? []; 
+      return data['meals'] ?? [];
     } else {
       throw Exception('ERROR.');
     }
@@ -38,7 +65,7 @@ class _FoodPageState extends State<FoodPage> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      return data['meals'] ?? []; 
+      return data['meals'] ?? [];
     } else {
       throw Exception('ERROR.');
     }
@@ -74,6 +101,17 @@ class _FoodPageState extends State<FoodPage> {
       appBar: AppBar(
         title: Text('Meals available'),
         backgroundColor: Colors.orange,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => FormAddResource(selectedValue: 'Meal')),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -88,7 +126,43 @@ class _FoodPageState extends State<FoodPage> {
               ),
             ),
           ),
-
+          if (widget.data)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Last food created',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: ListTile(
+                      title: Text(
+                        widget.name.isNotEmpty ? widget.name : 'Unknown food',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        widget.category.isNotEmpty
+                            ? widget.category
+                            : 'Unknown category',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
               future: _futureMeals,
@@ -116,14 +190,17 @@ class _FoodPageState extends State<FoodPage> {
                                 )
                               : Icon(Icons.fastfood),
                           title: Text(meal['strMeal'] ?? 'Unknown meal'),
-                          subtitle: Text(meal['strCategory'] ?? 'Unknown category'),
+                          subtitle:
+                              Text(meal['strCategory'] ?? 'Unknown category'),
                           onTap: () async {
-                            final mealDetails = await fetchMealDetails(meal['idMeal']);
+                            final mealDetails =
+                                await fetchMealDetails(meal['idMeal']);
                             if (mealDetails != null) {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MealDetailPage(mealDetails),
+                                  builder: (context) =>
+                                      MealDetailPage(mealDetails),
                                 ),
                               );
                             }
@@ -141,5 +218,3 @@ class _FoodPageState extends State<FoodPage> {
     );
   }
 }
-
-

@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FoodPage()),
+                  MaterialPageRoute(builder: (context) => FoodPage.empty()),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -79,7 +79,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CocktailsPage()),
+                  MaterialPageRoute(builder: (context) => CocktailsPage.empty()),
                 );
               },
               style: ElevatedButton.styleFrom(
