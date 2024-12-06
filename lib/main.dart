@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'food_page.dart';
 import 'cocktails_page.dart';
+import 'form_add_resource.dart';
 
 void main() {
   runApp(MyApp());
@@ -137,6 +138,10 @@ class _MainPageState extends State<MainPage> {
             child: IconButton(
               icon: Icon(Icons.add, color: const Color.fromARGB(255, 248, 247, 247), size: 30),
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FormAddResource()),
+                );
               },
             ),
           ),
