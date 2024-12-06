@@ -1,10 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'coktail_detail_page.dart';
-
+import 'cocktail_detail_page.dart';
+import 'form_add_resource.dart';
 
 class CocktailsPage extends StatefulWidget {
+  final bool data;
+  final String selectedValue;
+  final String name;
+  final String category;
+  final String description;
+
+  const CocktailsPage({
+    super.key,
+    this.data = true,
+    required this.selectedValue,
+    required this.name,
+    required this.category,
+    required this.description,
+  });
+
+  const CocktailsPage.empty({
+    super.key,
+    this.data = false,
+    this.selectedValue = "",
+    this.name = "",
+    this.category = "",
+    this.description = "",
+  });
+
   @override
   _CocktailsPageState createState() => _CocktailsPageState();
 }
@@ -75,6 +99,19 @@ class _CocktailsPageState extends State<CocktailsPage> {
       appBar: AppBar(
         title: Text('Available Cocktails'),
         backgroundColor: Colors.purple,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => FormAddResource(selectedValue: 'Drink'),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -89,6 +126,45 @@ class _CocktailsPageState extends State<CocktailsPage> {
               ),
             ),
           ),
+          if (widget.data)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Last drink created',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.black,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Card(
+                    elevation: 4,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    child: ListTile(
+                      title: Text(
+                        widget.name.isNotEmpty
+                            ? widget.name
+                            : 'Unknown drink',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        widget.category.isNotEmpty
+                            ? widget.category
+                            : 'Unknown category',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           Expanded(
             child: FutureBuilder<List<dynamic>>(
               future: _cocktails,
@@ -115,9 +191,9 @@ class _CocktailsPageState extends State<CocktailsPage> {
                                   fit: BoxFit.cover,
                                 )
                               : Icon(Icons.fastfood),
-                          title: Text(cocktail['strDrink'] ?? 'Unknown cocktail'),
-                          subtitle:
-                              Text(
+                          title:
+                              Text(cocktail['strDrink'] ?? 'Unknown cocktail'),
+                          subtitle: Text(
                               cocktail['strCategory'] ?? 'Unknown category'),
                           onTap: () async {
                             final cocktailDetails =

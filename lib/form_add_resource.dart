@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'cocktails_page.dart';
+import 'food_page.dart';
 
 class FormAddResource extends StatelessWidget {
-  const FormAddResource({super.key});
+  final String? selectedValue;
+
+  const FormAddResource({super.key, this.selectedValue});
 
   @override
   Widget build(BuildContext context) {
@@ -32,14 +36,15 @@ class FormAddResource extends StatelessWidget {
           titleSpacing: 0,
         ),
       ),
-      body: const AddResourceForm(),
+      body: AddResourceForm(selectedValue: selectedValue),
     );
   }
 }
 
-
 class AddResourceForm extends StatefulWidget {
-  const AddResourceForm({super.key});
+  final String? selectedValue;
+
+  const AddResourceForm({super.key, this.selectedValue});
 
   @override
   AddResourceFormState createState() {
@@ -51,8 +56,15 @@ class AddResourceFormState extends State<AddResourceForm> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedValue;
   final List<String> _options = ['Drink', 'Meal'];
+  String? _name;
   String? _category;
   String? _description;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedValue = widget.selectedValue;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +89,7 @@ class AddResourceFormState extends State<AddResourceForm> {
               },
               items: _options.map((String value) {
                 return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
+                    value: value, child: Text(value));
               }).toList(),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -94,6 +104,11 @@ class AddResourceFormState extends State<AddResourceForm> {
                 labelText: 'Name',
                 border: OutlineInputBorder(),
               ),
+              onChanged: (value) {
+                setState(() {
+                  _name = value;
+                });
+              },
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter a name';
@@ -149,9 +164,35 @@ class AddResourceFormState extends State<AddResourceForm> {
                 child: ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Processing Data')),
-                      );
+                      String selectedValue = _selectedValue ?? 'No value selected';
+                      String name = _name ?? 'Unnamed';
+                      String category = _category ?? '';
+                      String description = _description ?? '';
+                      if(selectedValue == "Drink"){
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CocktailsPage(
+                              selectedValue: selectedValue ?? 'Drink',
+                              name: _name ?? '',
+                              category: _category ?? '',
+                              description: _description ?? '',
+                            ),
+                          ),
+                        );
+                      }else{
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FoodPage(
+                              selectedValue: selectedValue ?? 'Meal',
+                              name: _name ?? '',
+                              category: _category ?? '',
+                              description: _description ?? '',
+                            ),
+                          ),
+                        );
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
