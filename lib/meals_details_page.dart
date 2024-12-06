@@ -24,7 +24,7 @@ class MealDetailPage extends StatelessWidget {
                   : Icon(Icons.fastfood, size: 100),
               SizedBox(height: 16),
               Text(
-                'Category: ${mealDetails['strCategory'] ?? 'Unknown'}',
+                'Category: ${mealDetails['strCategory'] ?? 'Unknown Category'}',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 8),

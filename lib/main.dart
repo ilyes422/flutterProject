@@ -20,7 +20,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,20 +42,20 @@ class MainPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.orange,
-                padding: EdgeInsets.zero, 
+                padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               child: Container(
                 width: 200,
-                height: 200, 
+                height: 200,
                 child: Column(
                   children: [
                     Expanded(
                       child: Image.network(
                         'https://t3.ftcdn.net/jpg/02/60/12/88/360_F_260128861_Q2ttKHoVw2VrmvItxyCVBnEyM1852MoJ.jpg',
-                        fit: BoxFit.cover, 
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Padding(
@@ -60,7 +65,7 @@ class MainPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, 
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -68,8 +73,7 @@ class MainPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 20), 
-           
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
@@ -79,20 +83,20 @@ class MainPage extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple,
-                padding: EdgeInsets.zero, 
+                padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               child: Container(
-                width: 200, 
-                height: 200, 
+                width: 200,
+                height: 200,
                 child: Column(
                   children: [
                     Expanded(
                       child: Image.network(
-                        'https://media.istockphoto.com/id/502072256/fr/photo/assortiment-cocktail-au-bar-bien-%C3%A9clair%C3%A9.jpg?s=612x612&w=0&k=20&c=p_Mf7rT2UXR8kEtWyZnYkk-BMcd51Z-ZOLnzS-NxgPE=', 
-                        fit: BoxFit.cover, 
+                        'https://media.istockphoto.com/id/502072256/fr/photo/assortiment-cocktail-au-bar-bien-%C3%A9clair%C3%A9.jpg?s=612x612&w=0&k=20&c=p_Mf7rT2UXR8kEtWyZnYkk-BMcd51Z-ZOLnzS-NxgPE=',
+                        fit: BoxFit.cover,
                       ),
                     ),
                     Padding(
@@ -102,7 +106,7 @@ class MainPage extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white, 
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -111,6 +115,31 @@ class MainPage extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.orange, Colors.purple],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+        ),
+        child: Center(
+          child: Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.add, color: const Color.fromARGB(255, 248, 247, 247), size: 30),
+              onPressed: () {
+              },
+            ),
+          ),
         ),
       ),
     );
