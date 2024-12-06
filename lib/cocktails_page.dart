@@ -73,9 +73,15 @@ class _CocktailsPageState extends State<CocktailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Available Cocktails'),
-        backgroundColor: Colors.purple,
-      ),
+        title: Text(
+          'Available Cocktails',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,  
+              ),
+            ),
+           backgroundColor: Colors.purple,
+        ),
       body: Column(
         children: [
           Padding(

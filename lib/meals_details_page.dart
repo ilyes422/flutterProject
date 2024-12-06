@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 class MealDetailPage extends StatelessWidget {
@@ -11,9 +12,19 @@ class MealDetailPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(mealDetails['strMeal']),
-        backgroundColor: Colors.orange,
+      title: Text(
+        mealDetails['strMeal'],
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
+      backgroundColor: Colors.orange,
+      actions: [
+        IconButton(
+          icon: Icon(Icons.star_border, color: Colors.white),
+          onPressed: () {
+          },
+        ),
+      ],
+    ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(

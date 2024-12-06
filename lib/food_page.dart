@@ -15,7 +15,7 @@ class _FoodPageState extends State<FoodPage> {
   @override
   void initState() {
     super.initState();
-    _futureMeals = fetchMealsByFirstLetter('a'); 
+    _futureMeals = fetchMealsByFirstLetter('C'); 
   }
 
   Future<List<dynamic>> fetchMealsByFirstLetter(String letter) async {
@@ -72,9 +72,15 @@ class _FoodPageState extends State<FoodPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Meals available'),
-        backgroundColor: Colors.orange,
-      ),
+        title: Text(
+          'Available Meals',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,  
+              ),
+            ),
+           backgroundColor: Colors.orange,
+        ),
       body: Column(
         children: [
           Padding(

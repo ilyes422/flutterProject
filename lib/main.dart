@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'food_page.dart';
 import 'cocktails_page.dart';
+import 'favorite_food_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -12,9 +13,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Main App',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
-      ),
       home: MainPage(),
     );
   }
@@ -126,20 +124,37 @@ class _MainPageState extends State<MainPage> {
             end: Alignment.centerRight,
           ),
         ),
-        child: Center(
-          child: Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: Icon(Icons.restaurant_menu, color: Colors.white),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FavoriteFoodPage()),
+                );
+              },
             ),
-            child: IconButton(
-              icon: Icon(Icons.add, color: const Color.fromARGB(255, 248, 247, 247), size: 30),
+            Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: IconButton(
+                icon: Icon(Icons.add, color: Colors.white, size: 30),
+                onPressed: () {
+              },
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.local_bar, color: Colors.white),
               onPressed: () {
               },
             ),
-          ),
+          ],
         ),
       ),
     );
