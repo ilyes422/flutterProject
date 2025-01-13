@@ -37,15 +37,17 @@ class FoodPage extends StatefulWidget {
 class _FoodPageState extends State<FoodPage> {
   late Future<List<dynamic>> _futureMeals;
   String _searchQuery = '';
+  String _selectedLetter = 'a';
+  final List<String> letters = List.generate(26, (index) => String.fromCharCode(97 + index));
 
   @override
   void initState() {
     super.initState();
-    _futureMeals = fetchMealsByFirstLetter('a');
+    _futureMeals = fetchMealsByFirstLetter(_selectedLetter);
   }
 
   Future<List<dynamic>> fetchMealsByFirstLetter(String letter) async {
-    final response = await http.get(
+     final response = await http.get(
       Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?f=$letter'),
     );
 
@@ -87,9 +89,18 @@ class _FoodPageState extends State<FoodPage> {
     setState(() {
       _searchQuery = value;
       if (_searchQuery.isEmpty) {
-        _futureMeals = fetchMealsByFirstLetter('a');
+        _futureMeals = fetchMealsByFirstLetter(_selectedLetter);
       } else {
         _futureMeals = fetchMealsByName(_searchQuery);
+      }
+    });
+  }
+
+  void _onLetterSelected(String letter) {
+    setState(() {
+      _selectedLetter = letter;
+      if (_searchQuery.isEmpty) {
+        _futureMeals = fetchMealsByFirstLetter(letter);
       }
     });
   }
@@ -112,103 +123,146 @@ class _FoodPageState extends State<FoodPage> {
           ),
         ],
       ),
-      body: Column(
+      body:Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: _onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Check the meals',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-          ),
-          if (widget.data)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Last food created',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.black,
+          Expanded(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    onChanged: _onSearchChanged,
+                    decoration: InputDecoration(
+                      hintText: 'Check the meals',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.search),
                     ),
                   ),
-                  SizedBox(height: 16),
-                  Card(
-                    elevation: 4,
-                    margin: const EdgeInsets.only(bottom: 16),
-                    child: ListTile(
-                      title: Text(
-                        widget.name.isNotEmpty ? widget.name : 'Unknown food',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      subtitle: Text(
-                        widget.category.isNotEmpty
-                            ? widget.category
-                            : 'Unknown category',
-                        style: TextStyle(fontSize: 14),
-                      ),
+                ),
+                if (widget.data)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: 16),
+                        Card(
+                          elevation: 4,
+                          margin: const EdgeInsets.only(bottom: 16),
+                          child: ListTile(
+                            title: Text(
+                              widget.name.isNotEmpty ? widget.name : 'Unknown food',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            subtitle: Text(
+                              widget.category.isNotEmpty
+                                  ? widget.category
+                                  : 'Unknown category',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                  )
-                ],
+                  ),
+                Expanded(
+                  child: FutureBuilder<List<dynamic>>(
+                    future: _futureMeals,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text('ERROR : ${snapshot.error}'));
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(child: Text('No meal found.'));
+                      } else {
+                        final meals = snapshot.data!;
+                        return ListView.builder(
+                          itemCount: meals.length,
+                          itemBuilder: (context, index) {
+                            final meal = meals[index];
+                            return Card(
+                              child: ListTile(
+                                leading: meal['strMealThumb'] != null
+                                    ? Image.network(
+                                        meal['strMealThumb'],
+                                        width: 50,
+                                        height: 50,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Icon(Icons.fastfood),
+                                title: Text(meal['strMeal'] ?? 'Unknown meal'),
+                                subtitle:
+                                    Text(meal['strCategory'] ?? 'Unknown category'),
+                                onTap: () async {
+                                  final mealDetails =
+                                      await fetchMealDetails(meal['idMeal']);
+                                  if (mealDetails != null) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            MealDetailPage(mealDetails),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 50,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              border: Border(
+                left: BorderSide(
+                  color: Colors.grey[300]!,
+                  width: 1,
+                ),
               ),
             ),
-          Expanded(
-            child: FutureBuilder<List<dynamic>>(
-              future: _futureMeals,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('ERROR : ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No meal found.'));
-                } else {
-                  final meals = snapshot.data!;
-                  return ListView.builder(
-                    itemCount: meals.length,
-                    itemBuilder: (context, index) {
-                      final meal = meals[index];
-                      return Card(
-                        child: ListTile(
-                          leading: meal['strMealThumb'] != null
-                              ? Image.network(
-                                  meal['strMealThumb'],
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                )
-                              : Icon(Icons.fastfood),
-                          title: Text(meal['strMeal'] ?? 'Unknown meal'),
-                          subtitle:
-                              Text(meal['strCategory'] ?? 'Unknown category'),
-                          onTap: () async {
-                            final mealDetails =
-                                await fetchMealDetails(meal['idMeal']);
-                            if (mealDetails != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      MealDetailPage(mealDetails),
-                                ),
-                              );
-                            }
-                          },
+            child: ListView.builder(
+              itemCount: letters.length,
+              itemBuilder: (context, index) {
+                final letter = letters[index];
+                return GestureDetector(
+                  onTap: () => _onLetterSelected(letter),
+                  child: Container(
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: _selectedLetter == letter 
+                          ? Colors.orange 
+                          : Colors.transparent,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey[300]!,
+                          width: 1,
                         ),
-                      );
-                    },
-                  );
-                }
+                      ),
+                    ),
+                    child: Text(
+                      letter.toUpperCase(),
+                      style: TextStyle(
+                        color: _selectedLetter == letter 
+                            ? Colors.white 
+                            : Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                );
               },
             ),
           ),
