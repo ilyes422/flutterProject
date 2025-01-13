@@ -53,10 +53,16 @@ class _MainPageState extends State<MainPage> {
                 height: 200,
                 child: Column(
                   children: [
-                    Expanded(
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
                       child: Image.network(
                         'https://t3.ftcdn.net/jpg/02/60/12/88/360_F_260128861_Q2ttKHoVw2VrmvItxyCVBnEyM1852MoJ.jpg',
                         fit: BoxFit.cover,
+                        width: 200,
+                        height: 150,
                       ),
                     ),
                     Padding(
@@ -94,10 +100,16 @@ class _MainPageState extends State<MainPage> {
                 height: 200,
                 child: Column(
                   children: [
-                    Expanded(
+                    ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
+                      ),
                       child: Image.network(
                         'https://media.istockphoto.com/id/502072256/fr/photo/assortiment-cocktail-au-bar-bien-%C3%A9clair%C3%A9.jpg?s=612x612&w=0&k=20&c=p_Mf7rT2UXR8kEtWyZnYkk-BMcd51Z-ZOLnzS-NxgPE=',
                         fit: BoxFit.cover,
+                        width: 200,
+                        height: 150,
                       ),
                     ),
                     Padding(
