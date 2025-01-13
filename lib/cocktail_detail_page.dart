@@ -18,7 +18,12 @@ class CocktailDetailPage extends StatelessWidget {
           child: Column(
             children: [
               cocktailDetails['strDrinkThumb'] != null
-                  ? Image.network(cocktailDetails['strDrinkThumb'])
+                  ? Hero(
+                      tag: cocktailDetails['idDrink'], 
+                      child: Image.network(
+                        cocktailDetails['strDrinkThumb']
+                      ) 
+                    )
                   : Icon(Icons.fastfood, size: 100),
               SizedBox(height: 16),
               Text(

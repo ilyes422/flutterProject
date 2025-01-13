@@ -198,11 +198,14 @@ class _CocktailsPageState extends State<CocktailsPage> {
                             return Card(
                               child: ListTile(
                                 leading: cocktail['strDrinkThumb'] != null
-                                    ? Image.network(
-                                        cocktail['strDrinkThumb'],
-                                        width: 50,
-                                        height: 50,
-                                        fit: BoxFit.cover,
+                                    ? Hero(
+                                        tag: cocktail['idDrink'], 
+                                        child: Image.network(
+                                          cocktail['strDrinkThumb'],
+                                          width: 50,
+                                          height: 50,
+                                          fit: BoxFit.cover,
+                                        ) 
                                       )
                               : Icon(Icons.fastfood),
                           title:
