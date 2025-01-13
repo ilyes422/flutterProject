@@ -18,7 +18,11 @@ class MealDetailPage extends StatelessWidget {
           child: Column(
             children: [
               mealDetails['strMealThumb'] != null
-                  ? Image.network(mealDetails['strMealThumb'])
+                  ? Hero(
+                    tag: mealDetails['idMeal'],
+                    child:  Image.network(mealDetails['strMealThumb']
+                    ),
+                   )
                   : Icon(Icons.fastfood, size: 100),
               SizedBox(height: 16),
               Text(

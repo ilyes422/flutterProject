@@ -187,12 +187,15 @@ class _FoodPageState extends State<FoodPage> {
                             return Card(
                               child: ListTile(
                                 leading: meal['strMealThumb'] != null
-                                    ? Image.network(
+                                    ? Hero(
+                                      tag: meal['idMeal'], 
+                                      child: Image.network(
                                         meal['strMealThumb'],
                                         width: 50,
                                         height: 50,
                                         fit: BoxFit.cover,
-                                      )
+                                      ),
+                                    ) 
                                     : Icon(Icons.fastfood),
                                 title: Text(meal['strMeal'] ?? 'Unknown meal'),
                                 subtitle:
